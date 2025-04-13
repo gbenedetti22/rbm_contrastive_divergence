@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-class RBM:
+class RBMCD:
     def __init__(self, n_visible, n_hidden, learning_rate=0.1):
         self.__n_visible = n_visible
         self.__n_hidden = n_hidden
@@ -49,17 +49,6 @@ class RBM:
         error = np.mean((v0 - v_prob) ** 2)
         return error
 
-    # Allenamento su più epoche
-    def train(self, x, epochs=10, k=1):
-        for epoch in range(epochs):
-            error = 0
-            for v in x:
-                error += self.__contrastive_divergence(v, k=k)
-            error /= len(x)
-
-            # self.__visualize_weights(epoch)
-            print(f"Epoca {epoch}, Errore: {error:.4f}")
-
     def __visualize_weights(self, epoch=None, figsize=(10, 5)):
         """
         Visualizza i pesi della RBM come immagini 28x28
@@ -94,6 +83,21 @@ class RBM:
         plt.tight_layout()
         plt.show()
 
+    def train(self, x, epochs=10, k=1):
+        error = 0
+
+        for epoch in range(epochs):
+            for v in x:
+                error += self.__contrastive_divergence(v, k=k)
+            error /= len(x)
+
+            # self.__visualize_weights(epoch)
+            print(f"Epoca {epoch}, Errore: {error:.4f}")
+
+            error = 0
+
+        return error
+
     def generate(self, n_steps=500):
         v = self.__rng.binomial(1, 0.5, size=self.__n_visible)
 
@@ -110,3 +114,24 @@ class RBM:
         h_prob = self.__prop_up(x)
 
         return self.__prop_down(h_prob)
+
+    def save(self, filename):
+        np.savez(filename,
+                 W=self.__W,
+                 a=self.__a,
+                 b=self.__b,
+                 n_visible=self.__n_visible,
+                 n_hidden=self.__n_hidden,
+                 learning_rate=self.__lr)
+        print(f"Model saved: {filename}.npz")
+
+    def load(self, filename):
+        data = np.load(filename)
+
+        self.__W = data['W']
+        self.__a = data['a']
+        self.__b = data['b']
+        self.__n_visible = int(data['n_visible'])
+        self.__n_hidden = int(data['n_hidden'])
+        self.__lr = float(data['learning_rate'])
+        print(f"Model loaded from {filename}")

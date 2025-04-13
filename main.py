@@ -6,7 +6,7 @@ from sklearn.preprocessing import MinMaxScaler
 from mnist_data_loader import MnistDataloader
 import matplotlib.pyplot as plt
 
-from rbm import RBM
+from rbmcd import RBMCD
 
 mnist_dataloader = MnistDataloader()
 (x_train, y_train), (x_test, y_test) = mnist_dataloader.load_data()
@@ -18,7 +18,7 @@ scaler = MinMaxScaler()
 x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform(x_test)
 
-rbm = RBM(n_visible=784, n_hidden=128, learning_rate=0.01)
+rbm = RBMCD(n_visible=784, n_hidden=128, learning_rate=0.01)
 
 # Addestriamo la RBM — esempio 10 epoche
 print("Training start")

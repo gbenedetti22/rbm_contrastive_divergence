@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.neural_network import BernoulliRBM
 from mnist_data_loader import MnistDataloader
-from rbm import RBM
+from rbmcd import RBMCD
 
 # Caricamento dataset
 mnist_dataloader = MnistDataloader()
@@ -18,7 +18,7 @@ x_test = scaler.transform(x_test)
 
 # Addestramento RBM custom
 print("Addestramento RBM custom...")
-rbm_custom = RBM(n_visible=784, n_hidden=128, learning_rate=0.01)
+rbm_custom = RBMCD(n_visible=784, n_hidden=128, learning_rate=0.01)
 rbm_custom.train(x_train, epochs=10)
 
 # Addestramento RBM scikit-learn
