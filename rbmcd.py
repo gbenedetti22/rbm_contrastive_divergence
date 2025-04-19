@@ -36,9 +36,11 @@ class RBMCD:
 
         v_state, h_prob, v_prob = None, None, None
         for step in range(k):
+            # dream phase
             v_prob = self.__prop_down(h_state)
             v_state = self.__sample_prob(v_prob)
 
+            # wake phase
             h_prob = self.__prop_up(v_state)
             h_state = self.__sample_prob(h_prob)
 
@@ -92,30 +94,21 @@ class RBMCD:
             error /= len(x)
 
             # self.__visualize_weights(epoch)
-            print(f"Epoca {epoch}, Errore: {error:.4f}")
+            print(f"Epoch {epoch}, Error (Mean): {error:.4f}")
 
             error = 0
 
         return error
-
-    def generate(self, n_steps=500):
-        v = self.__rng.binomial(1, 0.5, size=self.__n_visible)
-
-        for _ in range(n_steps):
-            h_prob = self.__prop_up(v)
-            h_state = self.__sample_prob(h_prob)
-
-            v_prob = self.__prop_down(h_state)
-            v = self.__sample_prob(v_prob)
-
-        return v
 
     def reconstruct(self, x):
         h_prob = self.__prop_up(x)
 
         return self.__prop_down(h_prob)
 
-    def save(self, filename):
+    def encode(self, x):
+        return self.__prop_up(x)
+
+    def save(self, filename="rbm"):
         np.savez(filename,
                  W=self.__W,
                  a=self.__a,
@@ -125,7 +118,7 @@ class RBMCD:
                  learning_rate=self.__lr)
         print(f"Model saved: {filename}.npz")
 
-    def load(self, filename):
+    def load(self, filename="rbm.npz"):
         data = np.load(filename)
 
         self.__W = data['W']
